@@ -1,10 +1,11 @@
 Sidescroller Stars
 ===============
-To achieve a side-scrolling star background in HTML5 Canvas games without making images.
+For making a cool side-scrolling star background in HTML5 Canvas games without making images.
 
 TODO
 ===============
-* Everything
+* Make the actual scrolling
+* Make different sorts of stars
 * Turn this into an actual library instead of just a tech demo
 
 Tech/Libraries used

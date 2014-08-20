@@ -98,7 +98,7 @@ task 'clean', 'clean generated files', -> clean -> log ";)", green
 appFiles  = [
   # omit coffee/ and .coffee to make the below lines a little shorter
   # 'audio'
-  # 'classes'
+  'classes'
   # 'collision'
   'main'
 ]

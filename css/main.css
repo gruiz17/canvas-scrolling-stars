@@ -1,5 +1,5 @@
 body {
-  font-family: 'Press Start 2P';
+  font-family: 'Orbitron', sans-serif;
   background-color: #000000;
   color: #ffffff;
   margin: 0 auto;
@@ -12,7 +12,7 @@ a {
 
 #me {
   line-height: 0px;
-  font-size: 10px;
+  font-size: 15px;
 }
 
 #heading {
@@ -26,7 +26,7 @@ a {
   padding-bottom: 5px;
 }
 #message {
-  margin: 20 auto;
+  margin: 10 auto;
   max-width: 550px;
 
 }
