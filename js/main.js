@@ -3,13 +3,15 @@
   var $, CircleStar, FPS, draw, drawStars, gameLoop, update;
 
   CircleStar = (function() {
-    function CircleStar(radius, centerX, centerY, speed, direction, color) {
+    function CircleStar(radius, centerX, centerY, speed, direction, color, parentArray) {
       this.radius = radius;
       this.centerX = centerX;
       this.centerY = centerY;
       this.speed = speed;
       this.direction = direction;
       this.color = color;
+      this.destroyed = false;
+      this.parentArray = parentArray;
     }
 
     CircleStar.prototype.draw = function() {
@@ -18,7 +20,45 @@
       window.ctx.beginPath();
       window.ctx.arc(this.centerX, this.centerY, this.radius, 0, 2 * Math.PI, false);
       window.ctx.fill();
-      return window.ctx.stroke();
+      window.ctx.stroke();
+      if (this.destroyed) {
+        return this.destroy();
+      }
+    };
+
+    CircleStar.prototype.move = function() {
+      if (this.direction === "LEFT") {
+        this.centerX -= this.speed;
+      } else if (this.direction === "RIGHT") {
+        this.centerX += this.speed;
+      } else if (this.direction === "UP") {
+        this.centerY -= this.speed;
+      } else if (this.direction === "DOWN") {
+        this.centerY += this.speed;
+      }
+      if (this.centerX < 0 || this.centerX > window.canvas.width || this.centerY < 0 || this.centerY > window.canvas.height) {
+        return this.destroyed = true;
+      }
+    };
+
+    CircleStar.prototype.destroy = function() {
+      var index, newX, newY;
+      newX = 0;
+      newY = 0;
+      if (this.direction === "LEFT") {
+        newX = window.canvas.width;
+        newY = Math.floor((Math.random() * window.canvas.height) + 1);
+      } else if (this.direction === "RIGHT") {
+        newY = Math.floor((Math.random() * window.canvas.height) + 1);
+      } else if (this.direction === "UP") {
+        newX = Math.floor((Math.random() * window.canvas.width) + 1);
+        newY = window.canvas.height;
+      } else if (this.direction === "DOWN") {
+        newX = Math.floor((Math.random() * window.canvas.width) + 1);
+      }
+      this.parentArray.push(new CircleStar(this.radius, newX, newY, this.speed, this.direction, this.color, this.parentArray));
+      index = this.parentArray.indexOf(this);
+      return this.parentArray.splice(index, 1);
     };
 
     return CircleStar;
@@ -33,38 +73,101 @@
 
   window.rect = window.canvas.getBoundingClientRect();
 
-  window.canvas.width = window.canvas.height = 550;
+  window.canvas.width = window.canvas.height = 570;
 
   window.ctx = window.canvas.getContext('2d');
 
-  document.getElementById('message').innerHTML = "Click to play!";
+  document.getElementById('message').innerHTML = "J -> Slow Down, K -> Speed Up";
 
-  window.direction = 'LEFT';
-
-  window.starCount = 200;
-
-  drawStars = function(radius, direction, color) {
-    var i, starArray, x, y, _i, _ref;
+  drawStars = function(type, radius, speed, direction, color, starCount) {
+    var i, starArray, x, y, _i;
     starArray = [];
-    for (i = _i = 1, _ref = window.starCount; 1 <= _ref ? _i <= _ref : _i >= _ref; i = 1 <= _ref ? ++_i : --_i) {
-      x = Math.floor((Math.random() * window.canvas.width) + 1);
-      y = Math.floor((Math.random() * window.canvas.height) + 1);
-      starArray.push(new CircleStar(radius, x, y, "0", direction, color));
+    if (type === "CIRCLE") {
+      for (i = _i = 1; 1 <= starCount ? _i <= starCount : _i >= starCount; i = 1 <= starCount ? ++_i : --_i) {
+        x = Math.floor((Math.random() * window.canvas.width) + 1);
+        y = Math.floor((Math.random() * window.canvas.height) + 1);
+        starArray.push(new CircleStar(radius, x, y, speed, direction, color, starArray));
+      }
+    } else {
+      console.log("enter one of these as first argument: ['CIRCLE']");
+      return;
     }
     return starArray;
   };
 
-  window.stars = drawStars(1, "LEFT", "#ffffff");
+  window.stars = drawStars("CIRCLE", 1, 1.5, "UP", "#ffffff", 200);
 
   $('#game').click(function(e) {});
 
+  $('#game').attr('tabindex', '0').keydown(function(e) {
+    var star, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _results;
+    console.log(e.keyCode);
+    if (e.keyCode === 87) {
+      _ref = window.stars;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        star = _ref[_i];
+        star.direction = "UP";
+      }
+    }
+    if (e.keyCode === 83) {
+      _ref1 = window.stars;
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        star = _ref1[_j];
+        star.direction = "DOWN";
+      }
+    }
+    if (e.keyCode === 65) {
+      _ref2 = window.stars;
+      for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+        star = _ref2[_k];
+        star.direction = "LEFT";
+      }
+    }
+    if (e.keyCode === 68) {
+      _ref3 = window.stars;
+      for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
+        star = _ref3[_l];
+        star.direction = "RIGHT";
+      }
+    }
+    if (e.keyCode === 74) {
+      _ref4 = window.stars;
+      for (_m = 0, _len4 = _ref4.length; _m < _len4; _m++) {
+        star = _ref4[_m];
+        if (star.speed > 1) {
+          star.speed -= 1;
+        }
+      }
+    }
+    if (e.keyCode === 75) {
+      _ref5 = window.stars;
+      _results = [];
+      for (_n = 0, _len5 = _ref5.length; _n < _len5; _n++) {
+        star = _ref5[_n];
+        if (star.speed < 7) {
+          _results.push(star.speed += 1);
+        } else {
+          _results.push(void 0);
+        }
+      }
+      return _results;
+    }
+  });
+
   $('#gamebox').mousemove(function(e) {});
 
-  update = function() {};
+  update = function() {
+    var star, _i, _len, _ref;
+    _ref = window.stars;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      star = _ref[_i];
+      star.move();
+    }
+  };
 
   draw = function() {
     var star, _i, _len, _ref;
-    window.ctx.clearRect(0, 0, 550, 550);
+    window.ctx.clearRect(0, 0, window.canvas.width, window.canvas.height);
     _ref = window.stars;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       star = _ref[_i];

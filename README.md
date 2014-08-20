@@ -4,7 +4,7 @@ For making a cool side-scrolling star background in HTML5 Canvas games without m
 
 TODO
 ===============
-* Make the actual scrolling
+* Stars that scroll at different speeds
 * Make different sorts of stars
 * Turn this into an actual library instead of just a tech demo
 
