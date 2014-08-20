@@ -1,0 +1,42 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Insert Title</title>
+  <meta name="description" content="your game">
+  <!--Whatever font you want -->
+  <link href='http://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css' />
+  <!--link href='http://fonts.googleapis.com/css?family=Lato:100,400,700' rel='stylesheet' type='text/css' /-->
+  <!--the css-->
+  <link href='css/main.css' rel='stylesheet' type='text/css'>
+  <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+  <!--script src="js/jquery-1.11.1.min.js"></script-->
+</head>
+<body>
+  <audio>
+    <!--Whatever audio you want.mp3-->
+  </audio>
+
+  <div id="heading">
+    <h2>Game title</h2>
+    <p id="me">by <a href="http://ggruiz.me/">Gabriel Ruiz</a></p>
+  </div>
+  <hr>
+  <div id="gamebox">
+    <div id="info">
+      <span id="lives">Lives: <span id="lifecount"></span></span>
+      <span id="level">Level: <span id="levelcount">1</span></span>
+    </div>
+    <div id="message">
+    </div>
+    <div id="main">
+      <canvas id="game">
+      </canvas>
+    </div>
+  </div>
+  <hr>
+  <div id="footer">
+    <p>made with love and CoffeeScript. Source code <a href="http://github.com/gruiz17/coffee-game-format">here</a>.</p>
+  </div>
+  <script src="js/main.js"></script>
+</body>
+</html>
