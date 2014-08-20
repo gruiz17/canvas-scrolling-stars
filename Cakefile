@@ -98,7 +98,7 @@ task 'clean', 'clean generated files', -> clean -> log ";)", green
 appFiles  = [
   # omit coffee/ and .coffee to make the below lines a little shorter
   # 'audio'
-  'classes'
+  # 'classes'
   # 'collision'
   'main'
 ]
@@ -111,12 +111,12 @@ task 'concat', 'Build single application file from source files', ->
       appContents[index] = fileContents
       process() if --remaining is 0
   process = ->
-    fs.writeFile 'js/break.coffee', appContents.join('\n\n'), 'utf8', (err) ->
+    fs.writeFile 'js/main.coffee', appContents.join('\n\n'), 'utf8', (err) ->
       throw err if err
-      exec 'coffee --compile js/app.coffee', (err, stdout, stderr) ->
+      exec 'coffee --compile js/main.coffee', (err, stdout, stderr) ->
         throw err if err
         console.log stdout + stderr
-        fs.unlink 'js/app.coffee', (err) ->
+        fs.unlink 'js/main.coffee', (err) ->
           throw err if err
           console.log 'Done.'
 

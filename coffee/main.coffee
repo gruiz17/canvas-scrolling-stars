@@ -13,6 +13,8 @@ window.ROUND_START = false
 window.LIVES = 3
 window.LEVEL = 1
 
+window.movable = false
+
 document.getElementById('lifecount').innerHTML = window.LIVES
 document.getElementById('levelcount').innerHTML = window.LEVEL
 document.getElementById('message').innerHTML = "Click to play!"
