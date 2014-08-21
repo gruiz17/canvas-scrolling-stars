@@ -207,8 +207,6 @@
 
   window.ctx = window.canvas.getContext('2d');
 
-  document.getElementById('message').innerHTML = "J -> Slow Down, K -> Speed Up";
-
   window.starField = new StarField("CIRCLE", 1, 1.5, "UP", "#ffffff", 200);
 
   $('#game').click(function(e) {});
