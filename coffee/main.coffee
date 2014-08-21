@@ -19,19 +19,7 @@ window.ctx = window.canvas.getContext('2d')
 # document.getElementById('levelcount').innerHTML = window.LEVEL
 document.getElementById('message').innerHTML = "J -> Slow Down, K -> Speed Up"
 
-drawStars = (type, radius, speed, direction, color, starCount) ->
-  starArray = []
-  if (type == "CIRCLE")
-    for i in [1..starCount]
-      x = Math.floor((Math.random() * window.canvas.width) + 1);
-      y = Math.floor((Math.random() * window.canvas.height) + 1);
-      starArray.push(new CircleStar(radius, x, y, speed, direction, color, starArray))
-  else
-    console.log("enter one of these as first argument: ['CIRCLE']")
-    return
-  return starArray
-
-window.stars = drawStars("CIRCLE", 1, 1.5, "UP", "#ffffff", 200)
+window.starField = new StarField("CIRCLE", 1, 1.5, "UP", "#ffffff", 200)
 
 $('#game').click (e) ->
 
@@ -39,40 +27,32 @@ $('#game').attr('tabindex', '0').keydown (e) ->
   # document.getElementById('message').innerHTML = e.keyCode
   console.log(e.keyCode)
   if ( e.keyCode == 87 )
-    for star in window.stars
-      star.direction = "UP"
+    window.starField.setDirection("UP")
 
   if ( e.keyCode == 83 )
-    for star in window.stars
-      star.direction = "DOWN"
+    window.starField.setDirection("DOWN")
 
   if ( e.keyCode == 65 )
-    for star in window.stars
-      star.direction = "LEFT"
+    window.starField.setDirection("LEFT")
 
   if ( e.keyCode == 68 )
-    for star in window.stars
-      star.direction = "RIGHT"
+    window.starField.setDirection("RIGHT")
 
   if ( e.keyCode == 74 )
-    for star in window.stars
-      if star.speed > 1
-        star.speed -= 1
+    window.starField.changeSpeed(-1)
 
   if ( e.keyCode == 75 )
-    for star in window.stars
-      if star.speed < 7
-        star.speed += 1
+    window.starField.changeSpeed(1)
 
 $('#gamebox').mousemove (e) ->
 
 update = () ->
-  star.move() for star in window.stars
+  window.starField.moveStars()
   return
 
 draw = () ->
   window.ctx.clearRect(0, 0, window.canvas.width, window.canvas.height)
-  star.draw() for star in window.stars
+  window.starField.draw()
   return
 
 gameLoop = () ->
