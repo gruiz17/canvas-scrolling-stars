@@ -207,7 +207,7 @@
 
   window.ctx = window.canvas.getContext('2d');
 
-  window.starField = new StarField("CIRCLE", 1, 1.5, "UP", "#ffffff", 200);
+  window.starField = new StarField("CIRCLE", 1, 1.5, "UP", "#ffffff", 100);
 
   $('#game').click(function(e) {});
 

@@ -17,9 +17,9 @@ window.ctx = window.canvas.getContext('2d')
 
 # document.getElementById('lifecount').innerHTML = window.LIVES
 # document.getElementById('levelcount').innerHTML = window.LEVEL
-#document.getElementById('message').innerHTML = "J -> Slow Down, K -> Speed Up"
+# document.getElementById('message').innerHTML = "J -> Slow Down, K -> Speed Up"
 
-window.starField = new StarField("CIRCLE", 1, 1.5, "UP", "#ffffff", 200)
+window.starField = new StarField("CIRCLE", 1, 1.5, "UP", "#ffffff", 100)
 
 $('#game').click (e) ->
 
