@@ -38,6 +38,12 @@ $('#game').attr('tabindex', '0').keydown (e) ->
   if ( e.keyCode == 68 )
     window.starField.setDirection("RIGHT")
 
+  if ( e.keyCode == 81 )
+    window.starField.freeze()
+
+  if ( e.keyCode == 69 )
+    window.starField.resume()
+
   if ( e.keyCode == 74 )
     window.starField.changeSpeed(-1)
 

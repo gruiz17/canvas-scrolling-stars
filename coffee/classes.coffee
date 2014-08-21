@@ -1,14 +1,23 @@
 class StarField
   constructor: (type, radius, speed, direction, color, starCount) ->
     @stars = []
-    if (type == "CIRCLE")
+    @type = type
+    @speed = speed
+    @direction = direction
+    @color = color
+
+    if (speed < 1)
+      throw new Error('Speed must be at least 1')
+    else if (typeof direction == 'undefined') or (!(direction in ['UP', 'DOWN', 'LEFT', 'RIGHT']))
+      throw new Error("Specify a direction from ['UP', 'DOWN', 'LEFT', 'RIGHT']")
+    else if (!(type in ['CIRCLE']))
+      console.log("enter one of these as first argument: ['CIRCLE']")
+      throw new Error("didn't enter a valid type of star from ['CIRCLE']")
+    else
       for i in [1..starCount]
         x = Math.floor((Math.random() * window.canvas.width) + 1);
         y = Math.floor((Math.random() * window.canvas.height) + 1);
         @stars.push(new CircleStar(radius, x, y, speed, direction, color, @stars))
-    else
-      console.log("enter one of these as first argument: ['CIRCLE']")
-      throw new Error("didn't enter a valid type of star")
 
   draw: () ->
     if (@stars.length > 0)
@@ -23,35 +32,47 @@ class StarField
   setDirection: (direction) ->
     if (@stars.length > 0)
       for star in @stars
-        star.direction = direction
+        star.direction = @direction = direction
+    return
+
+  freeze: () ->
+    if (@stars.length > 0)
+      for star in @stars
+        star.speed = 0
+    return
+
+  resume: () ->
+    @setSpeed(@speed)
+    @setDirection(@direction)
     return
 
   setSpeed: (speed) ->
     if (@stars.length > 0)
       for star in @stars
         if speed > 8
-          star.speed = 8
+          star.speed = @speed = 8
         else if speed < 1
-          star.speed = 1
+          star.speed = @speed = 1
         else
-          star.speed = speed
+          star.speed = @speed = speed
     return
 
   changeSpeed: (delta) ->
     if (@stars.length > 0)
       for star in @stars
         star.speed += delta
+        @speed += delta
         if star.speed < 1
-          star.speed = 1
+          star.speed = @speed = 1
         else if star.speed > 8
-          star.speed = 8
+          star.speed = @speed = 8
     return
 
   setColor: (randomize, color) ->
     if (!randomize)
       if (@stars.length > 0)
         for star in @stars
-          star.color = color
+          star.color = @color = color
     else
       # todo: more advanced randomization for user
       return

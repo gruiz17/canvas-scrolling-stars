@@ -240,7 +240,6 @@ moduleExists = (name) ->
     log "#{name} required: npm install #{name}", red
     false
 
-
 # ## *mocha*
 #
 # **given** optional array of option flags
