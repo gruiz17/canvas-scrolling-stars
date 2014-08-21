@@ -100,6 +100,7 @@ appFiles  = [
   # 'audio'
   'classes'
   # 'collision'
+  'events'
   'main'
 ]
 
@@ -119,6 +120,14 @@ task 'concat', 'Build single application file from source files', ->
         fs.unlink 'js/main.coffee', (err) ->
           throw err if err
           console.log 'Done.'
+
+task 'minify', 'Minify the resulting application file after build', ->
+  exec 'java -jar "compiler.jar" --js js/main.js --js_output_file js/main.min.js', (err, stdout, stderr) ->
+    if err
+      throw err
+      console.log stdout + stderr
+    else
+      console.log 'done.'
 
 # Internal Functions
 #
