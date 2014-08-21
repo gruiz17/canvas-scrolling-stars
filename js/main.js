@@ -197,18 +197,6 @@
 
   $ = jQuery;
 
-  FPS = 100;
-
-  window.canvas = document.getElementById('game');
-
-  window.rect = window.canvas.getBoundingClientRect();
-
-  window.canvas.width = window.canvas.height = 570;
-
-  window.ctx = window.canvas.getContext('2d');
-
-  window.starField = new StarField("CIRCLE", 1, 1.5, "UP", "#ffffff", 100);
-
   $('#game').click(function(e) {});
 
   $('#game').attr('tabindex', '0').keydown(function(e) {
@@ -240,6 +228,18 @@
   });
 
   $('#gamebox').mousemove(function(e) {});
+
+  FPS = 100;
+
+  window.canvas = document.getElementById('game');
+
+  window.rect = window.canvas.getBoundingClientRect();
+
+  window.canvas.width = window.canvas.height = 570;
+
+  window.ctx = window.canvas.getContext('2d');
+
+  window.starField = new StarField("CIRCLE", 1, 1.5, "UP", "#ffffff", 100);
 
   update = function() {
     window.starField.moveStars();

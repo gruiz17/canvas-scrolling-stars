@@ -1,5 +1,3 @@
-$ = jQuery
-
 FPS = 100
 window.canvas = document.getElementById('game')
 window.rect = window.canvas.getBoundingClientRect()

@@ -1,3 +1,5 @@
+$ = jQuery
+
 $('#game').click (e) ->
 
 $('#game').attr('tabindex', '0').keydown (e) ->
