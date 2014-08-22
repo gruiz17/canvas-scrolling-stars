@@ -6,7 +6,6 @@ View the demo [here on my website](http://ggruiz.me/sidescroller-stars/)!
 
 TODO
 ===============
-* Layers of stars that scroll at different speeds
 * Randomized star colors
 * Make different sorts of stars
 * Turn this into an actual library instead of just a tech demo

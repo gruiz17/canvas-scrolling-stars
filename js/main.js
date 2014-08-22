@@ -3,13 +3,16 @@
   var $, CircleStar, FPS, StarField, draw, gameLoop, update;
 
   StarField = (function() {
-    function StarField(type, radius, speed, direction, color, starCount) {
-      var i, x, y, _i;
+    function StarField(type, radius, speed, direction, color, starCount, layers) {
+      var bigLayerMultiplier, finalPartitionSize, i, j, layerObject, multiplier, nearFinalStarCount, partitionSize, small, smallLayerDivisor, x, y, _i, _j, _k, _l, _m, _n, _o;
       this.stars = [];
       this.type = type;
       this.speed = speed;
       this.direction = direction;
       this.color = color;
+      this.starCount = starCount;
+      this.layers = layers;
+      this.layered = false;
       if (speed < 1) {
         throw new Error('Speed must be at least 1');
       } else if ((typeof direction === 'undefined') || (!(direction === 'UP' || direction === 'DOWN' || direction === 'LEFT' || direction === 'RIGHT'))) {
@@ -17,8 +20,82 @@
       } else if (!(type === 'CIRCLE')) {
         console.log("enter one of these as first argument: ['CIRCLE']");
         throw new Error("didn't enter a valid type of star from ['CIRCLE']");
+      } else if (!(typeof layers === 'undefined')) {
+        this.layered = true;
+        partitionSize = Math.floor(starCount / layers);
+        smallLayerDivisor = bigLayerMultiplier = 3;
+        small = true;
+        multiplier = 1;
+        for (i = _i = 1; 1 <= layers ? _i <= layers : _i >= layers; i = 1 <= layers ? ++_i : --_i) {
+          if (layers === 1) {
+            this.layered = false;
+            for (j = _j = 1; 1 <= partitionSize ? _j <= partitionSize : _j >= partitionSize; j = 1 <= partitionSize ? ++_j : --_j) {
+              x = Math.floor((Math.random() * window.canvas.width) + 1);
+              y = Math.floor((Math.random() * window.canvas.height) + 1);
+              this.stars.push(new CircleStar(radius, x, y, speed, direction, color, this.stars));
+            }
+          } else {
+            this.layered = true;
+            layerObject = {};
+            layerObject.layerArray = [];
+            layerObject.first = false;
+            layerObject.small = small;
+            layerObject.ratio = multiplier;
+            if (i === 1) {
+              layerObject.first = true;
+              for (j = _k = 1; 1 <= partitionSize ? _k <= partitionSize : _k >= partitionSize; j = 1 <= partitionSize ? ++_k : --_k) {
+                x = Math.floor((Math.random() * window.canvas.width) + 1);
+                y = Math.floor((Math.random() * window.canvas.height) + 1);
+                layerObject.layerArray.push(new CircleStar(radius, x, y, speed, direction, color, layerObject.layerArray));
+              }
+            } else if (i === layers) {
+              nearFinalStarCount = this.stars.reduce(function(a, b) {
+                return a + b;
+              });
+              if (nearFinalStarCount + partitionSize < starCount) {
+                finalPartitionSize = starCount - nearFinalStarCount;
+                for (j = _l = 1; 1 <= finalPartitionSize ? _l <= finalPartitionSize : _l >= finalPartitionSize; j = 1 <= finalPartitionSize ? ++_l : --_l) {
+                  x = Math.floor((Math.random() * window.canvas.width) + 1);
+                  y = Math.floor((Math.random() * window.canvas.height) + 1);
+                  if (small) {
+                    layerObject.layerArray.push(new CircleStar(radius / multiplier, x, y, speed / multiplier, direction, color, layerObject.layerArray));
+                  } else {
+                    layerObject.layerArray.push(new CircleStar(radius + multiplier, x, y, speed * multiplier, direction, color, layerObject.layerArray));
+                  }
+                }
+              } else {
+                for (j = _m = 1; 1 <= partitionSize ? _m <= partitionSize : _m >= partitionSize; j = 1 <= partitionSize ? ++_m : --_m) {
+                  x = Math.floor((Math.random() * window.canvas.width) + 1);
+                  y = Math.floor((Math.random() * window.canvas.height) + 1);
+                  if (small) {
+                    layerObject.layerArray.push(new CircleStar(radius / multiplier, x, y, speed / multiplier, direction, color, layerObject.layerArray));
+                  } else {
+                    layerObject.layerArray.push(new CircleStar(radius + multiplier, x, y, speed * multiplier, direction, color, layerObject.layerArray));
+                  }
+                }
+              }
+            } else {
+              for (j = _n = 1; 1 <= partitionSize ? _n <= partitionSize : _n >= partitionSize; j = 1 <= partitionSize ? ++_n : --_n) {
+                x = Math.floor((Math.random() * window.canvas.width) + 1);
+                y = Math.floor((Math.random() * window.canvas.height) + 1);
+                if (small) {
+                  layerObject.layerArray.push(new CircleStar(radius / multiplier, x, y, speed / multiplier, direction, color, layerObject.layerArray));
+                } else {
+                  layerObject.layerArray.push(new CircleStar(radius + multiplier, x, y, speed * multiplier, direction, color, layerObject.layerArray));
+                }
+              }
+            }
+            if (small) {
+              small = false;
+              multiplier *= 2;
+            } else {
+              small = true;
+            }
+            this.stars.push(layerObject);
+          }
+        }
       } else {
-        for (i = _i = 1; 1 <= starCount ? _i <= starCount : _i >= starCount; i = 1 <= starCount ? ++_i : --_i) {
+        for (i = _o = 1; 1 <= starCount ? _o <= starCount : _o >= starCount; i = 1 <= starCount ? ++_o : --_o) {
           x = Math.floor((Math.random() * window.canvas.width) + 1);
           y = Math.floor((Math.random() * window.canvas.height) + 1);
           this.stars.push(new CircleStar(radius, x, y, speed, direction, color, this.stars));
@@ -27,45 +104,93 @@
     }
 
     StarField.prototype.draw = function() {
-      var star, _i, _len, _ref;
-      if (this.stars.length > 0) {
+      var layer, star, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+      if (this.layered === true) {
         _ref = this.stars;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          star = _ref[_i];
-          star.draw();
+          layer = _ref[_i];
+          _ref1 = layer.layerArray;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            star = _ref1[_j];
+            star.draw();
+          }
+        }
+      } else {
+        if (this.stars.length > 0) {
+          _ref2 = this.stars;
+          for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+            star = _ref2[_k];
+            star.draw();
+          }
         }
       }
     };
 
     StarField.prototype.moveStars = function() {
-      var star, _i, _len, _ref;
-      if (this.stars.length > 0) {
+      var layer, star, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+      if (this.layered === true) {
         _ref = this.stars;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          star = _ref[_i];
-          star.move();
+          layer = _ref[_i];
+          _ref1 = layer.layerArray;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            star = _ref1[_j];
+            star.move();
+          }
+        }
+      } else {
+        if (this.stars.length > 0) {
+          _ref2 = this.stars;
+          for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+            star = _ref2[_k];
+            star.move();
+          }
         }
       }
     };
 
     StarField.prototype.setDirection = function(direction) {
-      var star, _i, _len, _ref;
-      if (this.stars.length > 0) {
+      var layer, star, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+      if (this.layered === true) {
         _ref = this.stars;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          star = _ref[_i];
-          star.direction = this.direction = direction;
+          layer = _ref[_i];
+          _ref1 = layer.layerArray;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            star = _ref1[_j];
+            star.direction = this.direction = direction;
+          }
+        }
+      } else {
+        if (this.stars.length > 0) {
+          _ref2 = this.stars;
+          for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+            star = _ref2[_k];
+            star.direction = this.direction = direction;
+          }
         }
       }
     };
 
     StarField.prototype.freeze = function() {
-      var star, _i, _len, _ref;
-      if (this.stars.length > 0) {
+      var layer, star, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+      if (this.layered === true) {
         _ref = this.stars;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          star = _ref[_i];
-          star.speed = 0;
+          layer = _ref[_i];
+          _ref1 = layer.layerArray;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            star = _ref1[_j];
+            star.speed = 0;
+          }
+        }
+      } else {
+        if (this.stars.length > 0) {
+          _ref2 = this.stars;
+          for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+            star = _ref2[_k];
+            star.speed = 0;
+          }
         }
       }
     };
@@ -76,17 +201,49 @@
     };
 
     StarField.prototype.setSpeed = function(speed) {
-      var star, _i, _len, _ref;
-      if (this.stars.length > 0) {
-        _ref = this.stars;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          star = _ref[_i];
-          if (speed > 8) {
-            star.speed = this.speed = 8;
-          } else if (speed < 1) {
-            star.speed = this.speed = 1;
+      var adjustedSpeed, i, star, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _ref, _ref1, _ref2, _ref3, _ref4;
+      if (this.layered === true) {
+        adjustedSpeed = speed;
+        if (speed > 8) {
+          adjustedSpeed = 8;
+        } else if (speed < 1) {
+          adjustedSpeed = 1;
+        }
+        for (i = _i = 1, _ref = this.layers; 1 <= _ref ? _i <= _ref : _i >= _ref; i = 1 <= _ref ? ++_i : --_i) {
+          if (i === 1) {
+            _ref1 = this.stars[i - 1].layerArray;
+            for (_j = 0, _len = _ref1.length; _j < _len; _j++) {
+              star = _ref1[_j];
+              star.speed = adjustedSpeed;
+            }
           } else {
-            star.speed = this.speed = speed;
+            if (this.stars[i - 1].small) {
+              _ref2 = this.stars[i - 1].layerArray;
+              for (_k = 0, _len1 = _ref2.length; _k < _len1; _k++) {
+                star = _ref2[_k];
+                star.speed = adjustedSpeed / this.stars[i - 1].ratio;
+              }
+            } else {
+              _ref3 = this.stars[i - 1].layerArray;
+              for (_l = 0, _len2 = _ref3.length; _l < _len2; _l++) {
+                star = _ref3[_l];
+                star.speed = adjustedSpeed * this.stars[i - 1].ratio;
+              }
+            }
+          }
+        }
+      } else {
+        if (this.stars.length > 0) {
+          _ref4 = this.stars;
+          for (_m = 0, _len3 = _ref4.length; _m < _len3; _m++) {
+            star = _ref4[_m];
+            if (speed > 8) {
+              star.speed = this.speed = 8;
+            } else if (speed < 1) {
+              star.speed = this.speed = 1;
+            } else {
+              star.speed = this.speed = speed;
+            }
           }
         }
       }
@@ -239,7 +396,7 @@
 
   window.ctx = window.canvas.getContext('2d');
 
-  window.starField = new StarField("CIRCLE", 1, 1.5, "UP", "#ffffff", 100);
+  window.starField = new StarField("CIRCLE", 1, 1, "UP", "#ffffff", 100, 3);
 
   update = function() {
     window.starField.moveStars();

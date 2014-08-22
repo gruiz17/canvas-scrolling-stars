@@ -1,10 +1,13 @@
 class StarField
-  constructor: (type, radius, speed, direction, color, starCount) ->
+  constructor: (type, radius, speed, direction, color, starCount, layers) ->
     @stars = []
     @type = type
     @speed = speed
     @direction = direction
     @color = color
+    @starCount = starCount
+    @layers = layers
+    @layered = false
 
     if (speed < 1)
       throw new Error('Speed must be at least 1')
@@ -13,32 +16,113 @@ class StarField
     else if (!(type in ['CIRCLE']))
       console.log("enter one of these as first argument: ['CIRCLE']")
       throw new Error("didn't enter a valid type of star from ['CIRCLE']")
+    else if (!(typeof layers == 'undefined'))
+      @layered = true
+      partitionSize = Math.floor(starCount/layers)
+      smallLayerDivisor = bigLayerMultiplier = 3
+      small = true
+      multiplier = 1
+      for i in [1..layers]
+        if (layers == 1)
+          @layered = false
+          for j in [1..partitionSize]
+            x = Math.floor((Math.random() * window.canvas.width) + 1);
+            y = Math.floor((Math.random() * window.canvas.height) + 1);
+            @stars.push(new CircleStar(radius, x, y, speed, direction, color, @stars))
+        else
+          @layered = true
+          layerObject = {}
+          layerObject.layerArray = []
+          layerObject.first = false
+          layerObject.small = small
+          layerObject.ratio = multiplier
+          if (i == 1)
+            layerObject.first = true
+            for j in [1..partitionSize]
+              x = Math.floor((Math.random() * window.canvas.width) + 1);
+              y = Math.floor((Math.random() * window.canvas.height) + 1);
+              layerObject.layerArray.push(new CircleStar(radius, x, y, speed, direction, color, layerObject.layerArray))
+          else if (i == layers)
+            nearFinalStarCount = @stars.reduce((a,b) -> a + b)
+            if (nearFinalStarCount + partitionSize < starCount)
+              finalPartitionSize = starCount - nearFinalStarCount
+              for j in [1..finalPartitionSize]
+                x = Math.floor((Math.random() * window.canvas.width) + 1);
+                y = Math.floor((Math.random() * window.canvas.height) + 1);
+                if small
+                  layerObject.layerArray.push(new CircleStar(radius/multiplier, x, y, speed/multiplier, direction, color, layerObject.layerArray))
+                else
+                  layerObject.layerArray.push(new CircleStar(radius + multiplier, x, y, speed * multiplier, direction, color, layerObject.layerArray))
+            else
+              for j in [1..partitionSize]
+                x = Math.floor((Math.random() * window.canvas.width) + 1);
+                y = Math.floor((Math.random() * window.canvas.height) + 1);
+                if small
+                  layerObject.layerArray.push(new CircleStar(radius/multiplier, x, y, speed/multiplier, direction, color, layerObject.layerArray))
+                else
+                  layerObject.layerArray.push(new CircleStar(radius + multiplier, x, y, speed * multiplier, direction, color, layerObject.layerArray))
+          else
+            for j in [1..partitionSize]
+              x = Math.floor((Math.random() * window.canvas.width) + 1);
+              y = Math.floor((Math.random() * window.canvas.height) + 1);
+              if small
+                layerObject.layerArray.push(new CircleStar(radius/multiplier, x, y, speed/multiplier, direction, color, layerObject.layerArray))
+              else
+                layerObject.layerArray.push(new CircleStar(radius + multiplier, x, y, speed * multiplier, direction, color, layerObject.layerArray))
+          if small
+            small = false
+            multiplier *= 2
+          else
+            small = true
+          @stars.push(layerObject)
     else
       for i in [1..starCount]
         x = Math.floor((Math.random() * window.canvas.width) + 1);
         y = Math.floor((Math.random() * window.canvas.height) + 1);
         @stars.push(new CircleStar(radius, x, y, speed, direction, color, @stars))
 
+  # @determineType: (type) ->
+  #   if (type == 'CIRCLE')
+  #     return 'todo'
+
   draw: () ->
-    if (@stars.length > 0)
-      star.draw() for star in @stars
+    if (@layered == true)
+      for layer in @stars
+        star.draw() for star in layer.layerArray
+    else
+      if (@stars.length > 0)
+        star.draw() for star in @stars
     return
 
   moveStars: () ->
-    if (@stars.length > 0)
-      star.move() for star in @stars
+    if (@layered == true)
+      for layer in @stars
+        star.move() for star in layer.layerArray
+    else
+      if (@stars.length > 0)
+        star.move() for star in @stars
     return
 
   setDirection: (direction) ->
-    if (@stars.length > 0)
-      for star in @stars
-        star.direction = @direction = direction
+    if (@layered == true)
+      for layer in @stars
+        for star in layer.layerArray
+          star.direction = @direction = direction
+    else
+      if (@stars.length > 0)
+        for star in @stars
+          star.direction = @direction = direction
     return
 
   freeze: () ->
-    if (@stars.length > 0)
-      for star in @stars
-        star.speed = 0
+    if (@layered == true)
+      for layer in @stars
+        for star in layer.layerArray
+          star.speed = 0
+    else
+      if (@stars.length > 0)
+        for star in @stars
+          star.speed = 0
     return
 
   resume: () ->
@@ -47,14 +131,32 @@ class StarField
     return
 
   setSpeed: (speed) ->
-    if (@stars.length > 0)
-      for star in @stars
-        if speed > 8
-          star.speed = @speed = 8
-        else if speed < 1
-          star.speed = @speed = 1
+    if (@layered == true)
+      adjustedSpeed = speed
+      if speed > 8
+        adjustedSpeed = 8
+      else if speed < 1
+        adjustedSpeed = 1
+      for i in [1..@layers]
+        if (i == 1)
+          for star in @stars[i-1].layerArray
+            star.speed = adjustedSpeed
         else
-          star.speed = @speed = speed
+          if (@stars[i-1].small)
+            for star in @stars[i-1].layerArray
+              star.speed = adjustedSpeed/@stars[i-1].ratio
+          else
+            for star in @stars[i-1].layerArray
+              star.speed = adjustedSpeed * @stars[i-1].ratio
+    else
+      if (@stars.length > 0)
+        for star in @stars
+          if speed > 8
+            star.speed = @speed = 8
+          else if speed < 1
+            star.speed = @speed = 1
+          else
+            star.speed = @speed = speed
     return
 
   changeSpeed: (delta) ->
