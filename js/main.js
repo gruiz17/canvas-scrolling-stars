@@ -250,17 +250,65 @@
     };
 
     StarField.prototype.changeSpeed = function(delta) {
-      var star, _i, _len, _ref;
-      if (this.stars.length > 0) {
-        _ref = this.stars;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          star = _ref[_i];
-          star.speed += delta;
-          this.speed += delta;
-          if (star.speed < 1) {
-            star.speed = this.speed = 1;
-          } else if (star.speed > 8) {
-            star.speed = this.speed = 8;
+      var i, star, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _ref, _ref1, _ref2, _ref3, _ref4;
+      if (this.layered === true) {
+        for (i = _i = 1, _ref = this.layers; 1 <= _ref ? _i <= _ref : _i >= _ref; i = 1 <= _ref ? ++_i : --_i) {
+          if (i === 1) {
+            _ref1 = this.stars[i - 1].layerArray;
+            for (_j = 0, _len = _ref1.length; _j < _len; _j++) {
+              star = _ref1[_j];
+              star.speed += delta;
+              this.speed += delta;
+              if (star.speed < 1) {
+                star.speed = this.speed = 1;
+              } else if (star.speed > 8) {
+                star.speed = this.speed = 8;
+              }
+            }
+          } else {
+            if (this.stars[i - 1].small) {
+              _ref2 = this.stars[i - 1].layerArray;
+              for (_k = 0, _len1 = _ref2.length; _k < _len1; _k++) {
+                star = _ref2[_k];
+                star.speed += delta / this.stars[i - 1].ratio;
+                this.speed += delta;
+                if (this.speed < 1) {
+                  this.speed = 1;
+                  star.speed = 1 / this.stars[i - 1].ratio;
+                } else if (star.speed > 8) {
+                  this.speed = 8;
+                  star.speed = 8 / this.stars[i - 1].ratio;
+                }
+              }
+            } else {
+              _ref3 = this.stars[i - 1].layerArray;
+              for (_l = 0, _len2 = _ref3.length; _l < _len2; _l++) {
+                star = _ref3[_l];
+                star.speed += delta * this.stars[i - 1].ratio;
+                this.speed += delta;
+                if (this.speed < 1) {
+                  this.speed = 1;
+                  star.speed = 1 * this.stars[i - 1].ratio;
+                } else if (star.speed > 8) {
+                  this.speed = 8;
+                  star.speed = 8 * this.stars[i - 1].ratio;
+                }
+              }
+            }
+          }
+        }
+      } else {
+        if (this.stars.length > 0) {
+          _ref4 = this.stars;
+          for (_m = 0, _len3 = _ref4.length; _m < _len3; _m++) {
+            star = _ref4[_m];
+            star.speed += delta;
+            this.speed += delta;
+            if (star.speed < 1) {
+              star.speed = this.speed = 1;
+            } else if (star.speed > 8) {
+              star.speed = this.speed = 8;
+            }
           }
         }
       }

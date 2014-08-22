@@ -160,14 +160,46 @@ class StarField
     return
 
   changeSpeed: (delta) ->
-    if (@stars.length > 0)
-      for star in @stars
-        star.speed += delta
-        @speed += delta
-        if star.speed < 1
-          star.speed = @speed = 1
-        else if star.speed > 8
-          star.speed = @speed = 8
+    if (@layered == true)
+      for i in [1..@layers]
+        if (i == 1)
+          for star in @stars[i-1].layerArray
+            star.speed += delta
+            @speed += delta
+            if star.speed < 1
+              star.speed = @speed = 1
+            else if star.speed > 8
+              star.speed = @speed = 8
+        else
+          if (@stars[i-1].small)
+            for star in @stars[i-1].layerArray
+              star.speed += delta/@stars[i-1].ratio
+              @speed += delta
+              if @speed < 1
+                @speed = 1
+                star.speed = 1/@stars[i-1].ratio
+              else if star.speed > 8
+                @speed = 8
+                star.speed = 8/@stars[i-1].ratio
+          else
+            for star in @stars[i-1].layerArray
+              star.speed += delta * @stars[i-1].ratio
+              @speed += delta
+              if @speed < 1
+                @speed = 1
+                star.speed = 1 * @stars[i-1].ratio
+              else if star.speed > 8
+                @speed = 8
+                star.speed = 8 * @stars[i-1].ratio
+    else
+      if (@stars.length > 0)
+        for star in @stars
+          star.speed += delta
+          @speed += delta
+          if star.speed < 1
+            star.speed = @speed = 1
+          else if star.speed > 8
+            star.speed = @speed = 8
     return
 
   setColor: (randomize, color) ->
