@@ -1,4 +1,9 @@
-class StarField
+class Singleton
+  @_instance: null
+  @getInstance: ->
+    @_instance or= new @( arguments... )
+
+class StarField extends Singleton
   constructor: (type, radius, speed, direction, color, starCount, layers) ->
     @stars = []
     @type = type
@@ -163,34 +168,31 @@ class StarField
     if (@layered == true)
       for i in [1..@layers]
         if (i == 1)
-          for star in @stars[i-1].layerArray
-            star.speed += delta
+          if (@speed + delta <= 1)
+            @speed = 1
+          else if (@speed + delta >= 8)
+            @speed = 8
+          else
             @speed += delta
-            if star.speed < 1
-              star.speed = @speed = 1
-            else if star.speed > 8
-              star.speed = @speed = 8
+          for star in @stars[0].layerArray
+            star.speed = @speed
         else
           if (@stars[i-1].small)
             for star in @stars[i-1].layerArray
-              star.speed += delta/@stars[i-1].ratio
-              @speed += delta
-              if @speed < 1
-                @speed = 1
+              if @speed <= 1
                 star.speed = 1/@stars[i-1].ratio
-              else if star.speed > 8
-                @speed = 8
+              else if @speed >= 8
                 star.speed = 8/@stars[i-1].ratio
+              else
+                star.speed += delta/@stars[i-1].ratio
           else
             for star in @stars[i-1].layerArray
-              star.speed += delta * @stars[i-1].ratio
-              @speed += delta
-              if @speed < 1
-                @speed = 1
+              if @speed <= 1
                 star.speed = 1 * @stars[i-1].ratio
-              else if star.speed > 8
-                @speed = 8
+              else if @speed >= 8
                 star.speed = 8 * @stars[i-1].ratio
+              else
+                star.speed += delta * @stars[i-1].ratio
     else
       if (@stars.length > 0)
         for star in @stars
