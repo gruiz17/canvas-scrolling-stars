@@ -91,41 +91,42 @@ class StarField extends Singleton
   #     return 'todo'
 
   draw: () ->
-    if (@layered == true)
-      for layer in @stars
-        star.draw() for star in layer.layerArray
-    else
-      if (@stars.length > 0)
+    if (@stars.length > 0)
+      if (@layered == true)
+        for layer in @stars
+          star.draw() for star in layer.layerArray
+      else
         star.draw() for star in @stars
     return
 
   moveStars: () ->
-    if (@layered == true)
-      for layer in @stars
-        star.move() for star in layer.layerArray
-    else
-      if (@stars.length > 0)
+    if (@stars.length > 0)
+      if (@layered == true)
+        for layer in @stars
+          star.move() for star in layer.layerArray
+      else
         star.move() for star in @stars
     return
 
   setDirection: (direction) ->
-    if (@layered == true)
-      for layer in @stars
-        for star in layer.layerArray
-          star.direction = @direction = direction
-    else
-      if (@stars.length > 0)
+    @direction = direction
+    if (@stars.length > 0)
+      if (@layered == true)
+        for layer in @stars
+          for star in layer.layerArray
+            star.direction = direction
+      else
         for star in @stars
-          star.direction = @direction = direction
+          star.direction = direction
     return
 
   freeze: () ->
-    if (@layered == true)
-      for layer in @stars
-        for star in layer.layerArray
-          star.speed = 0
-    else
-      if (@stars.length > 0)
+    if (@stars.length > 0)
+      if (@layered == true)
+        for layer in @stars
+          for star in layer.layerArray
+            star.speed = 0
+      else
         for star in @stars
           star.speed = 0
     return
@@ -136,25 +137,25 @@ class StarField extends Singleton
     return
 
   setSpeed: (speed) ->
-    if (@layered == true)
-      adjustedSpeed = speed
-      if speed > 8
-        adjustedSpeed = 8
-      else if speed < 1
-        adjustedSpeed = 1
-      for i in [1..@layers]
-        if (i == 1)
-          for star in @stars[i-1].layerArray
-            star.speed = adjustedSpeed
-        else
-          if (@stars[i-1].small)
+    if (@stars.length > 0)
+      if (@layered == true)
+        adjustedSpeed = speed
+        if speed > 8
+          adjustedSpeed = 8
+        else if speed < 1
+          adjustedSpeed = 1
+        for i in [1..@layers]
+          if (i == 1)
             for star in @stars[i-1].layerArray
-              star.speed = adjustedSpeed/@stars[i-1].ratio
+              star.speed = adjustedSpeed
           else
-            for star in @stars[i-1].layerArray
-              star.speed = adjustedSpeed * @stars[i-1].ratio
-    else
-      if (@stars.length > 0)
+            if (@stars[i-1].small)
+              for star in @stars[i-1].layerArray
+                star.speed = adjustedSpeed/@stars[i-1].ratio
+            else
+              for star in @stars[i-1].layerArray
+                star.speed = adjustedSpeed * @stars[i-1].ratio
+      else
         for star in @stars
           if speed > 8
             star.speed = @speed = 8
@@ -165,36 +166,36 @@ class StarField extends Singleton
     return
 
   changeSpeed: (delta) ->
-    if (@layered == true)
-      for i in [1..@layers]
-        if (i == 1)
-          if (@speed + delta <= 1)
-            @speed = 1
-          else if (@speed + delta >= 8)
-            @speed = 8
+    if (@stars.length > 0)
+      if (@layered == true)
+        for i in [1..@layers]
+          if (i == 1)
+            if (@speed + delta <= 1)
+              @speed = 1
+            else if (@speed + delta >= 8)
+              @speed = 8
+            else
+              @speed += delta
+            for star in @stars[0].layerArray
+              star.speed = @speed
           else
-            @speed += delta
-          for star in @stars[0].layerArray
-            star.speed = @speed
-        else
-          if (@stars[i-1].small)
-            for star in @stars[i-1].layerArray
-              if @speed <= 1
-                star.speed = 1/@stars[i-1].ratio
-              else if @speed >= 8
-                star.speed = 8/@stars[i-1].ratio
-              else
-                star.speed += delta/@stars[i-1].ratio
-          else
-            for star in @stars[i-1].layerArray
-              if @speed <= 1
-                star.speed = 1 * @stars[i-1].ratio
-              else if @speed >= 8
-                star.speed = 8 * @stars[i-1].ratio
-              else
-                star.speed += delta * @stars[i-1].ratio
-    else
-      if (@stars.length > 0)
+            if (@stars[i-1].small)
+              for star in @stars[i-1].layerArray
+                if @speed <= 1
+                  star.speed = 1/@stars[i-1].ratio
+                else if @speed >= 8
+                  star.speed = 8/@stars[i-1].ratio
+                else
+                  star.speed += delta/@stars[i-1].ratio
+            else
+              for star in @stars[i-1].layerArray
+                if @speed <= 1
+                  star.speed = 1 * @stars[i-1].ratio
+                else if @speed >= 8
+                  star.speed = 8 * @stars[i-1].ratio
+                else
+                  star.speed += delta * @stars[i-1].ratio
+      else
         for star in @stars
           star.speed += delta
           @speed += delta
@@ -204,18 +205,29 @@ class StarField extends Singleton
             star.speed = @speed = 8
     return
 
-  setColor: (randomize, color) ->
-    if (!randomize)
-      if (@stars.length > 0)
+  setColor: (color) ->
+    @color = color
+    if (@stars.length > 0)
+      if (@layered)
+        for layer in @stars
+          for star in layer.layerArray
+            star.color = color
+      else
         for star in @stars
-          star.color = @color = color
-    else
-      # todo: more advanced randomization for user
-      return
+          star.color = color
     return
 
-  destroy: () ->
-    @stars = []
+  setBg: (color) ->
+    # todo: gotta do this too
+    window.canvas.style.backgroundColor = color
+    return
+
+  clear: () ->
+    if (@layered)
+      for i in [i..@layers]
+        layer = [] for layer in @stars
+    else
+      @stars = []
     return
 
 

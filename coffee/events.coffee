@@ -2,6 +2,8 @@ $ = jQuery
 
 $('#game').click (e) ->
 
+invert = true
+
 $('#game').attr('tabindex', '0').keydown (e) ->
   # document.getElementById('message').innerHTML = e.keyCode
   console.log(e.keyCode)
@@ -22,6 +24,16 @@ $('#game').attr('tabindex', '0').keydown (e) ->
 
   if ( e.keyCode == 69 )
     window.starField.resume()
+
+  if ( e.keyCode == 73 )
+    if invert
+      window.starField.setColor('#000000')
+      window.starField.setBg('#ffffff')
+      invert = false
+    else
+      window.starField.setColor('#ffffff')
+      window.starField.setBg('#000000')
+      invert = true
 
   if ( e.keyCode == 74 )
     window.starField.changeSpeed(-1)
