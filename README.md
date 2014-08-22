@@ -1,8 +1,8 @@
-Sidescroller Stars
+Canvas Scrolling Stars
 ===============
 For making a cool side-scrolling star background in HTML5 Canvas games without making images.
 
-View the demo [here on my website](http://ggruiz.me/sidescroller-stars/)!
+View the demo [here on my website](http://ggruiz.me/canvas-scrolling-stars/)!
 
 TODO
 ===============
