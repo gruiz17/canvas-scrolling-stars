@@ -20,7 +20,7 @@ class StarField
       @layered = true
       partitionSize = Math.floor(starCount/layers)
       smallLayerDivisor = bigLayerMultiplier = 3
-      small = true
+      small = false
       multiplier = 1
       for i in [1..layers]
         if (layers == 1)
@@ -52,7 +52,7 @@ class StarField
                 if small
                   layerObject.layerArray.push(new CircleStar(radius/multiplier, x, y, speed/multiplier, direction, color, layerObject.layerArray))
                 else
-                  layerObject.layerArray.push(new CircleStar(radius + multiplier, x, y, speed * multiplier, direction, color, layerObject.layerArray))
+                  layerObject.layerArray.push(new CircleStar(radius * multiplier, x, y, speed * multiplier, direction, color, layerObject.layerArray))
             else
               for j in [1..partitionSize]
                 x = Math.floor((Math.random() * window.canvas.width) + 1);
@@ -60,7 +60,7 @@ class StarField
                 if small
                   layerObject.layerArray.push(new CircleStar(radius/multiplier, x, y, speed/multiplier, direction, color, layerObject.layerArray))
                 else
-                  layerObject.layerArray.push(new CircleStar(radius + multiplier, x, y, speed * multiplier, direction, color, layerObject.layerArray))
+                  layerObject.layerArray.push(new CircleStar(radius * multiplier, x, y, speed * multiplier, direction, color, layerObject.layerArray))
           else
             for j in [1..partitionSize]
               x = Math.floor((Math.random() * window.canvas.width) + 1);
@@ -68,12 +68,12 @@ class StarField
               if small
                 layerObject.layerArray.push(new CircleStar(radius/multiplier, x, y, speed/multiplier, direction, color, layerObject.layerArray))
               else
-                layerObject.layerArray.push(new CircleStar(radius + multiplier, x, y, speed * multiplier, direction, color, layerObject.layerArray))
+                layerObject.layerArray.push(new CircleStar(radius * multiplier, x, y, speed * multiplier, direction, color, layerObject.layerArray))
           if small
             small = false
-            multiplier *= 2
           else
             small = true
+            multiplier *= 2
           @stars.push(layerObject)
     else
       for i in [1..starCount]

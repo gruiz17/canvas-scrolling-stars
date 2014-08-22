@@ -17,7 +17,7 @@ window.ctx = window.canvas.getContext('2d')
 # document.getElementById('levelcount').innerHTML = window.LEVEL
 # document.getElementById('message').innerHTML = "J -> Slow Down, K -> Speed Up"
 
-window.starField = new StarField("CIRCLE", 1, 1, "UP", "#ffffff", 100, 3)
+window.starField = new StarField("CIRCLE", 1, 1, "UP", "#ffffff", 100, 4)
 
 update = () ->
   window.starField.moveStars()
