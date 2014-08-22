@@ -86,7 +86,7 @@ task 'test', 'run tests', -> build -> mocha -> log ":)", green
 # ```
 task 'clean', 'clean generated files', -> clean -> log ";)", green
 
-# ## *concat
+# ## *concat*
 #
 # makes single js file from multiple files
 #
@@ -97,7 +97,7 @@ task 'clean', 'clean generated files', -> clean -> log ";)", green
 # ```
 appFiles  = [
   # omit coffee/ and .coffee to make the below lines a little shorter
-  # 'audio'
+  'audio'
   'classes'
   # 'collision'
   'events'
