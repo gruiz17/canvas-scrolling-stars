@@ -8,7 +8,8 @@ TODO
 ===============
 * Randomized star colors
 * Make different sorts of stars
-* Turn this into an actual library instead of just a tech demo
+* Turn this into a proper library with like tests and an NPM/bower distribution and stuff instead of just a janky "starfield.js" file in the "library" folder
+* Add instructions for how to use
 
 Tech/Libraries used
 ===============

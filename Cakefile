@@ -98,11 +98,17 @@ task 'clean', 'clean generated files', -> clean -> log ";)", green
 appFiles  = [
   # omit coffee/ and .coffee to make the below lines a little shorter
   'audio'
-  'classes'
+  # 'classes'
   # 'collision'
   'events'
   'main'
 ]
+
+libraryFiles = [
+  'classes'
+]
+
+libraryName = "starfield"
 
 task 'concat', 'Build single application file from source files', ->
   appContents = new Array remaining = appFiles.length
@@ -121,8 +127,33 @@ task 'concat', 'Build single application file from source files', ->
           throw err if err
           console.log 'Done.'
 
+task 'to-library', 'Build to library format', ->
+  appContents = new Array remaining = libraryFiles.length
+  for file, index in libraryFiles then do (file, index) ->
+    fs.readFile "coffee/#{file}.coffee", 'utf8', (err, fileContents) ->
+      throw err if err
+      appContents[index] = fileContents
+      process() if --remaining is 0
+  process = ->
+    fs.writeFile "library/#{libraryName}.coffee", appContents.join('\n\n'), 'utf8', (err) ->
+      throw err if err
+      exec "coffee --compile library/#{libraryName}.coffee", (err, stdout, stderr) ->
+        throw err if err
+        console.log stdout + stderr
+        fs.unlink "library/#{libraryName}.coffee", (err) ->
+          throw err if err
+          console.log 'Done.'
+
 task 'minify', 'Minify the resulting application file after build', ->
   exec 'java -jar "compiler.jar" --js js/main.js --js_output_file js/main.min.js', (err, stdout, stderr) ->
+    if err
+      throw err
+      console.log stdout + stderr
+    else
+      console.log 'done.'
+
+task 'minify-library', 'Minify library file', ->
+  exec "java -jar 'compiler.jar' --js library/#{libraryName}.js --js_output_file library/#{libraryName}.min.js", (err, stdout, stderr) ->
     if err
       throw err
       console.log stdout + stderr
