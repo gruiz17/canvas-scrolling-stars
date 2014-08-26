@@ -34,8 +34,6 @@ $('#game').attr('tabindex', '0').keydown (e) ->
       window.starField.setColor('#ffffff')
       window.starField.setBg('#000000')
       invert = true
-    window.invertColorSound.play()
-    window.invertColorSound = new Audio('sounds/invertColor.wav')
 
   if ( e.keyCode == 74 )
     window.starField.changeSpeed(-1)

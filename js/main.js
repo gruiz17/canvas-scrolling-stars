@@ -2,8 +2,6 @@
 (function() {
   var $, FPS, draw, gameLoop, invert, update;
 
-  window.invertColorSound = new Audio('sounds/invertColor.wav');
-
   $ = jQuery;
 
   $('#game').click(function(e) {});
@@ -40,8 +38,6 @@
         window.starField.setBg('#000000');
         invert = true;
       }
-      window.invertColorSound.play();
-      window.invertColorSound = new Audio('sounds/invertColor.wav');
     }
     if (e.keyCode === 74) {
       window.starField.changeSpeed(-1);
